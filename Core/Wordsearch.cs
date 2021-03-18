@@ -35,11 +35,11 @@ namespace Core
         private const float WordColumnSpacing = 180f;
         #endregion
 
-        public Bitmap ToBitmap(string backgroundImagePath, bool fillEmptyWithRandom)
+        public Bitmap ToBitmap(WordsearchRenderOption options)
         {
             // Build Matrix
             var matrix = BuildMatrixExceptBlanks();
-            if (fillEmptyWithRandom)
+            if ((options & WordsearchRenderOption.FillEmptyCellsWithRandomLetters) == WordsearchRenderOption.FillEmptyCellsWithRandomLetters)
             {
                 matrix.FillEmptyWithRandom();
             }
@@ -48,8 +48,17 @@ namespace Core
                 matrix.FillEmptyWithPlaceholder();
             }
 
+            Bitmap bitmap;
             // Load Base Image
-            Bitmap bitmap = (Bitmap)Image.FromFile(backgroundImagePath);
+            if ((options & WordsearchRenderOption.VisibleGrid) == WordsearchRenderOption.VisibleGrid)
+            {
+                 bitmap = Resources.PreviewBackgroundImage;
+            }
+            else
+            {
+                bitmap = Resources.ExportBackgroundImage;
+            }
+            
 
             using Graphics graphics = Graphics.FromImage(bitmap);
 

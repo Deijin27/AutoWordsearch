@@ -11,9 +11,7 @@ using AutoWordsearch.DialogUtil;
 namespace AutoWordsearch
 {
     public class MainWindowViewModel : ReactiveObject
-    {
-        private readonly string BackgroundImagePath = @"C:\Users\Mia\Desktop\AutoWordsearch\PreviewTemplate.png";
-
+    { 
         public SaveFileDialogCallback SaveImageDialog { get; set; }
         public SaveFileDialogCallback SaveFileDialog { get; set; }
         public OpenFileDialogCallback OpenFileDialog { get; set; }
@@ -28,7 +26,7 @@ namespace AutoWordsearch
             {
                 if (SaveImageDialog(WordsearchTitle, out string chosenFilePath))
                 {
-                    using var bitmap = WordsearchInstance.ToBitmap(BackgroundImagePath, true);
+                    using var bitmap = WordsearchInstance.ToBitmap(WordsearchRenderOption.FillEmptyCellsWithRandomLetters);
                     bitmap.Save(chosenFilePath);
                 }
             });
@@ -90,7 +88,7 @@ namespace AutoWordsearch
 
         public void UpdatePreview()
         {
-            using var bmp = WordsearchInstance.ToBitmap(BackgroundImagePath, false);
+            using var bmp = WordsearchInstance.ToBitmap(WordsearchRenderOption.VisibleGrid);
             PreviewSource = Conversions.BitmapToImageSource(bmp);
         }
 
