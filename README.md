@@ -1,10 +1,12 @@
 # AutoWordsearch
 
-Automatically generate wordsearches from a set of words
+Automatically generate wordsearches from a set of words.
 
 - Random word positions and directions
 - Export as png image for printing
 - Save as file and open again later (XML file with `.ws` file extension)
+
+A Windows app written in C# and WPF (with ReactiveUI).
 
 Screenshot of the interface:
 
