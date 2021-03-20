@@ -10,8 +10,8 @@ A Windows app written in C# and WPF (with ReactiveUI).
 
 Screenshot of the interface:
 
-![Screeenshot](https://i.imgur.com/8bJZscn.png)
+![Screeenshot](https://i.imgur.com/CZCl9PS.png)
 
 When you export as an image then empty spaces are filled with random letters resulting in something like this:
 
-![Exported Wordsearch](https://i.imgur.com/TYUYl2t.png)
+![Exported Wordsearch](https://i.imgur.com/qHID2bm.png)
