@@ -21,7 +21,7 @@
             <ColumnDefinition  />
         </Grid.ColumnDefinitions>
 
-        <Image x:Name="PreviewImage" Source="C:\Users\Mia\Desktop\AutoWordsearch\PreviewTemplate.png" Grid.RowSpan="4"
+        <Image x:Name="PreviewImage" Grid.RowSpan="4"
                    Margin="20,20,10,20"/>
 
         <Grid Grid.Column="1" Margin="10,20,20,20">
@@ -64,7 +64,7 @@
                             >Export File</Button>
             <Button x:Name="ExportImageButton" 
                             Grid.Column="0" Grid.Row="1" Margin="0,20,10,0"
-                            ToolTip="Fill empty squares with random letters, then export image to sub folder in Folder called Export"
+                            ToolTip="Export the wordsearch as an image with empty cells filled with random letters"
                             >Export Image</Button>
         </Grid>
         </Grid>
