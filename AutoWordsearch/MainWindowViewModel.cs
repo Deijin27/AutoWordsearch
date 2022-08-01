@@ -71,8 +71,10 @@ namespace AutoWordsearch
         {
             if (_dialog.SaveImageDialog(WordsearchTitle, out string chosenFilePath))
             {
-                using var bitmap = _wordsearchInstance.ToBitmap(WordsearchRenderOption.FillEmptyCellsWithRandomLetters);
-                bitmap.Save(chosenFilePath);
+                using (var bitmap = _wordsearchInstance.ToBitmap(WordsearchRenderOption.FillEmptyCellsWithRandomLetters))
+                {
+                    bitmap.Save(chosenFilePath);
+                }
             }
         }
 
@@ -101,7 +103,7 @@ namespace AutoWordsearch
 
         private void GenerateRandom()
         {
-            if (Wordsearch.TryGenerateRandom(Words.Split(Environment.NewLine), out Wordsearch ws))
+            if (Wordsearch.TryGenerateRandom(Words.Split(new string[] { Environment.NewLine }, StringSplitOptions.None), out Wordsearch ws))
             {
                 _wordsearchInstance.Words = ws.Words;
                 UpdatePreview();
