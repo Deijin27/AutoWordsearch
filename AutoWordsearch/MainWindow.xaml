@@ -1,18 +1,17 @@
-﻿<reactiveui:ReactiveWindow 
+﻿<Window 
     x:Class="AutoWordsearch.MainWindow"
-    x:TypeArguments="local:MainWindowViewModel"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:AutoWordsearch"
-    xmlns:reactiveui="http://reactiveui.net"
     mc:Ignorable="d"
     MinHeight="480"
     MinWidth="650"
     Height="480"
     Width="650"
-    Title="AutoWordsearch"  
+    Title="AutoWordsearch"
+    d:DataContext="{d:DesignInstance local:MainWindowViewModel}"
     Background="WhiteSmoke">
     
     <Grid>
@@ -21,8 +20,7 @@
             <ColumnDefinition  />
         </Grid.ColumnDefinitions>
 
-        <Image x:Name="PreviewImage" Grid.RowSpan="4"
-                   Margin="20,20,10,20"/>
+        <Image Source="{Binding PreviewSource}" Grid.RowSpan="4" Margin="20,20,10,20"/>
 
         <Grid Grid.Column="1" Margin="10,20,20,20">
             <Grid.RowDefinitions>
@@ -35,11 +33,10 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0">Title:</Label>
-            <TextBox x:Name="WordsearchTitleTextBox" Grid.Row="1" Text="Wordsearch Title" MaxLines="1" Padding="3"/>
-            <Label Grid.Row="3">Words:</Label>
-
-            <TextBox x:Name="WordsTextBox" Grid.Row="4" Text="Red&#xA;Green&#xA;Blue" Padding="3" AcceptsReturn="True"/>
+            <TextBlock Grid.Row="0">Title:</TextBlock>
+            <TextBox Text="{Binding WordsearchTitle, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" d:Text="Wordsearch Title" MaxLines="1" Padding="3"/>
+            <TextBlock Grid.Row="3">Words:</TextBlock>
+            <TextBox Text="{Binding Words}" Grid.Row="4" d:Text="Red&#xA;Green&#xA;Blue" Padding="3" AcceptsReturn="True"/>
 
         <Grid Grid.Row="6" Grid.Column="1">
             <Grid.ColumnDefinitions>
@@ -50,23 +47,23 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Button x:Name="GenerateRandomButton" 
+            <Button Command="{Binding GenerateRandomCommand}"
                             Grid.Column="0" Grid.Row="0" Margin="0,0,10,0"
                             ToolTip="Using the words, generate a random wordsearch and update the preview"
                             >Generate Random</Button>
-            <Button x:Name="ImportFileButton" 
+            <Button Command="{Binding ImportFileCommand}"
                             Grid.Column="1" Grid.Row="0" Margin="10,0,0,0"
                             ToolTip="Import a .ws file"
                             >Import File</Button>
-            <Button x:Name="ExportFileButton" 
+            <Button Command="{Binding ExportFileCommand}"
                             Grid.Column="1" Grid.Row="1" Margin="10,20,0,0" 
                             ToolTip="Export the current wordsearch in the preview as an as a .ws file"
                             >Export File</Button>
-            <Button x:Name="ExportImageButton" 
+            <Button Command="{Binding ExportImageCommand}"
                             Grid.Column="0" Grid.Row="1" Margin="0,20,10,0"
                             ToolTip="Export the wordsearch as an image with empty cells filled with random letters"
                             >Export Image</Button>
         </Grid>
         </Grid>
     </Grid>
-</reactiveui:ReactiveWindow>
+</Window>

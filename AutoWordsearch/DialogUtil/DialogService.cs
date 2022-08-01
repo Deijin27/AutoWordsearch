@@ -3,16 +3,12 @@ using System.IO;
 
 namespace AutoWordsearch.DialogUtil
 {
-    public delegate bool SaveFileDialogCallback(string fileNameWithoutExtension, out string chosenFilePath);
-    public delegate bool OpenFileDialogCallback(out string chosenFilePath);
-    public delegate void MessageBoxCallback(string message, string title, MessageBoxButton button, MessageBoxImage image);
-
-    public static class Dialogs
+    public class DialogService : IDialogService
     {
         private const string FileExtension = ".ws";
         private const string PngFileExtension = ".png";
 
-        public static bool SaveImageDialog(string fileNameWithoutExtension, out string chosenPath)
+        public bool SaveImageDialog(string fileNameWithoutExtension, out string chosenPath)
         {
             var dialog = new Microsoft.Win32.SaveFileDialog()
             {
@@ -27,7 +23,7 @@ namespace AutoWordsearch.DialogUtil
             return result == true;
         }
 
-        public static bool SaveFileDialog(string fileNameWithoutExtension, out string chosenPath)
+        public bool SaveFileDialog(string fileNameWithoutExtension, out string chosenPath)
         {
             var dialog = new Microsoft.Win32.SaveFileDialog()
             {
@@ -43,7 +39,7 @@ namespace AutoWordsearch.DialogUtil
             return result == true;
         }
 
-        public static bool OpenFileDialog(out string chosenPath)
+        public bool OpenFileDialog(out string chosenPath)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog()
             {
@@ -57,7 +53,7 @@ namespace AutoWordsearch.DialogUtil
             return result == true;
         }
 
-        public static void ShowMessageBox(string message, string title, MessageBoxButton button, MessageBoxImage image)
+        public void ShowMessageBox(string message, string title, MessageBoxButton button, MessageBoxImage image)
         {
             MessageBox.Show(message, title, button, image);
         }

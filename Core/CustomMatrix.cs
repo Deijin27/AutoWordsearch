@@ -4,24 +4,33 @@ namespace Core
 {
     public class CustomMatrix
     {
-        public static (int, int) TranslatePosition(int row, int column, OrdinalDirection ordinalDirection)
+        public static (int x, int y) TranslatePosition(int row, int column, OrdinalDirection ordinalDirection)
         {
-            return ordinalDirection switch
+            switch (ordinalDirection)
             {
-                OrdinalDirection.North => (row - 1, column),
-                OrdinalDirection.NorthEast => (row - 1, column + 1),
-                OrdinalDirection.East => (row, column + 1),
-                OrdinalDirection.SouthEast => (row + 1, column + 1),
-                OrdinalDirection.South => (row + 1, column),
-                OrdinalDirection.SouthWest => (row + 1, column - 1),
-                OrdinalDirection.West => (row, column - 1),
-                OrdinalDirection.NorthWest => (row - 1, column - 1),
-                _ => throw new ArgumentException("Invalid OrdinalDirection enum value"),
+                case OrdinalDirection.North:
+                    return (row - 1, column);
+                case OrdinalDirection.NorthEast: 
+                    return (row - 1, column + 1);
+                case OrdinalDirection.East: 
+                    return (row, column + 1);
+                case OrdinalDirection.SouthEast: 
+                    return (row + 1, column + 1);
+                case OrdinalDirection.South: 
+                    return (row + 1, column);
+                case OrdinalDirection.SouthWest: 
+                    return (row + 1, column - 1);
+                case OrdinalDirection.West: 
+                    return (row, column - 1);
+                case OrdinalDirection.NorthWest:  
+                    return (row - 1, column - 1);
+                default:
+                    throw new ArgumentException("Invalid OrdinalDirection enum value");
             };
         }
 
-        public readonly int Rows;
-        public readonly int Columns;
+        public int Rows { get; }
+        public int Columns { get; }
 
         public CustomMatrix(int rows, int columns)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Core
 {
@@ -17,6 +18,54 @@ namespace Core
 
         public string Title { get; set; }
         public List<Word> Words { get; set; }
+
+        #endregion
+
+        #region Serialization
+
+        public XDocument Serialize()
+        {
+            return new XDocument(
+                new XElement("Wordsearch",
+                    new XElement("Title", Title),
+                    new XElement("Words", Words.Select(x => 
+                        new XElement("Word", 
+                            new XElement("Text", x.Text),
+                            new XElement("StartColumn", x.StartColumn),
+                            new XElement("StartRow", x.StartRow),
+                            new XElement("Direction", x.Direction)
+             )))));
+        }
+
+        public static Wordsearch Deserialize(XDocument doc)
+        {
+            var result = new Wordsearch();
+
+            var root = doc.Element("Wordsearch");
+            if (root == null)
+            {
+                return result;
+            }
+
+            result.Title = root.Element("Title")?.Value ?? "";
+
+            var wordsElement = root.Element("Words");
+            if (wordsElement != null)
+            {
+                foreach (var wordElem in wordsElement.Elements("Word"))
+                {
+                    result.Words.Add(new Word
+                    {
+                        Text = wordElem.Element("Text")?.Value ?? "",
+                        StartColumn = int.TryParse(wordElem.Element("StartColumn")?.Value, out var sc) ? sc : 0,
+                        StartRow = int.TryParse(wordElem.Element("StartRow")?.Value, out var sr) ? sr : 0,
+                        Direction = Enum.TryParse<OrdinalDirection>(wordElem.Element("Direction")?.Value, out var di) ? di : OrdinalDirection.North
+                    });
+                }
+            }
+            return result;
+            
+        }
 
         #endregion
 
@@ -52,45 +101,46 @@ namespace Core
             // Load Base Image
             if ((options & WordsearchRenderOption.VisibleGrid) == WordsearchRenderOption.VisibleGrid)
             {
-                 bitmap = Resources.PreviewBackgroundImage;
+                bitmap = Resources.PreviewBackgroundImage;
             }
             else
             {
                 bitmap = Resources.ExportBackgroundImage;
             }
-            
 
-            using Graphics graphics = Graphics.FromImage(bitmap);
 
-            // Draw Title
-            graphics.DrawString(Title, TitleFont, Brushes.Black, TitleLocation, CentreFormat);
-
-            // Draw Letters in Cell Positions
-            for (int i = 0; i < matrix.Rows; i++)
+            using (Graphics graphics = Graphics.FromImage(bitmap)) 
             {
-                for (int j = 0; j < matrix.Columns; j++)
+                // Draw Title
+                graphics.DrawString(Title, TitleFont, Brushes.Black, TitleLocation, CentreFormat);
+
+                // Draw Letters in Cell Positions
+                for (int i = 0; i < matrix.Rows; i++)
                 {
-                    var point = new PointF(GridZeroZero.X + GridSpacing * j, GridZeroZero.Y + GridSpacing * i);
-                    graphics.DrawString(matrix.GetValueAt(i, j).ToString(), LetterFont, Brushes.Black, point, CentreFormat);
+                    for (int j = 0; j < matrix.Columns; j++)
+                    {
+                        var point = new PointF(GridZeroZero.X + GridSpacing * j, GridZeroZero.Y + GridSpacing * i);
+                        graphics.DrawString(matrix.GetValueAt(i, j).ToString(), LetterFont, Brushes.Black, point, CentreFormat);
+                    }
                 }
-            }
 
-            // Draw Words
-            int count = 0;
-            int columns = 3;
-            foreach (Word word in Words)
-            {
-                int col = count % columns;
-                int row = count / columns;
-                var wordPoint = new PointF(WordZeroZero.X + WordColumnSpacing * col, WordZeroZero.Y + WordRowSpacing * row);
-                graphics.DrawString
-                (
-                    word.Text.ToUpper().Trim(),
-                    WordFont,
-                    Brushes.Black,
-                    wordPoint
-                );
-                count++;
+                // Draw Words
+                int count = 0;
+                int columns = 3;
+                foreach (Word word in Words)
+                {
+                    int col = count % columns;
+                    int row = count / columns;
+                    var wordPoint = new PointF(WordZeroZero.X + WordColumnSpacing * col, WordZeroZero.Y + WordRowSpacing * row);
+                    graphics.DrawString
+                    (
+                        word.Text.ToUpper().Trim(),
+                        WordFont,
+                        Brushes.Black,
+                        wordPoint
+                    );
+                    count++;
+                }
             }
 
             return bitmap;

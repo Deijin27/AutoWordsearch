@@ -1,130 +1,122 @@
-﻿using ReactiveUI;
-using System.Reactive;
-using Core;
+﻿using Core;
 using System.Windows.Media.Imaging;
 using System.Linq;
 using System;
-using System.Xml.Serialization;
-using System.IO;
 using AutoWordsearch.DialogUtil;
+using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace AutoWordsearch
 {
-    public class MainWindowViewModel : ReactiveObject
-    { 
-        public SaveFileDialogCallback SaveImageDialog { get; set; }
-        public SaveFileDialogCallback SaveFileDialog { get; set; }
-        public OpenFileDialogCallback OpenFileDialog { get; set; }
-        public MessageBoxCallback ShowMessageBox { get; set; }
+    public class MainWindowViewModel : ViewModelBase
+    {
+        public string _words;
+        private BitmapImage _previewSource;
+        private Wordsearch _wordsearchInstance;
 
-        public MainWindowViewModel()
+        private readonly IDialogService _dialog;
+        public MainWindowViewModel(IDialogService dialog)
         {
-            WordsearchInstance = new Wordsearch();
+            _dialog = dialog;
+            _wordsearchInstance = new Wordsearch();
 
-
-            ExportImage = ReactiveCommand.Create(() =>
-            {
-                if (SaveImageDialog(WordsearchTitle, out string chosenFilePath))
-                {
-                    using var bitmap = WordsearchInstance.ToBitmap(WordsearchRenderOption.FillEmptyCellsWithRandomLetters);
-                    bitmap.Save(chosenFilePath);
-                }
-            });
-
-
-            ImportFile = ReactiveCommand.Create(() =>
-            {
-                if (OpenFileDialog(out string chosenFilePath))
-                {
-                    // deserialize wordsearch from file
-                    var xs = new XmlSerializer(typeof(Wordsearch));
-                    using var file = File.OpenRead(chosenFilePath);
-                    Wordsearch ws = (Wordsearch)xs.Deserialize(file);
-                    WordsearchInstance = ws;
-
-                    // Update interface
-                    Words = string.Join(Environment.NewLine, ws.Words.Select(i => i.Text));
-                    this.RaisePropertyChanged(nameof(WordsearchTitle));
-                    UpdatePreview();
-                }
-            });
-
-
-            ExportFile = ReactiveCommand.Create(() =>
-            {
-                if (SaveFileDialog(WordsearchTitle, out string chosenFilePath))
-                {
-                    // serialize wordsearch to file
-                    var xs = new XmlSerializer(typeof(Wordsearch));
-                    using var file = File.Create(chosenFilePath);
-                    xs.Serialize(file, WordsearchInstance);
-                }
-            });
-
-
-            GenerateRandom = ReactiveCommand.Create(() =>
-            {
-                if (Wordsearch.TryGenerateRandom(Words.Split(Environment.NewLine), out Wordsearch ws))
-                {
-                    WordsearchInstance.Words = ws.Words;
-                    UpdatePreview();
-                }
-                else
-                {
-                    ShowMessageBox
-                    (
-                        "We're having trouble fitting all of the words onto the wordsearch. Try reducing the length and number of words.",
-                        "Unable to Generate Wordsearch",
-                        System.Windows.MessageBoxButton.OK,
-                        System.Windows.MessageBoxImage.Error
-                    );
-
-                }
-            });
+            ExportImageCommand = new RelayCommand(ExportImage);
+            ImportFileCommand = new RelayCommand(ImportFile);
+            ExportFileCommand = new RelayCommand(ExportFile);
+            GenerateRandomCommand = new RelayCommand(GenerateRandom);
 
             UpdatePreview();
-
         }
 
         public void UpdatePreview()
         {
-            using var bmp = WordsearchInstance.ToBitmap(WordsearchRenderOption.VisibleGrid);
-            PreviewSource = Conversions.BitmapToImageSource(bmp);
+            using (var bmp = _wordsearchInstance.ToBitmap(WordsearchRenderOption.VisibleGrid))
+            {
+                PreviewSource = Conversions.BitmapToImageSource(bmp);
+            }
         }
 
-        public ReactiveCommand<Unit, Unit> ExportImage { get; }
-        public ReactiveCommand<Unit, Unit> ImportFile { get; }
-        public ReactiveCommand<Unit, Unit> ExportFile { get; }
-        public ReactiveCommand<Unit, Unit> GenerateRandom { get; }
-
-        public Wordsearch WordsearchInstance { get; set; }
+        public ICommand ExportImageCommand { get; }
+        public ICommand ImportFileCommand { get; }
+        public ICommand ExportFileCommand { get; }
+        public ICommand GenerateRandomCommand { get; }
 
         public string WordsearchTitle
         {
-            get => WordsearchInstance.Title;
+            get => _wordsearchInstance.Title;
             set
             {
-                if (WordsearchInstance.Title != value)
+                if (_wordsearchInstance.Title != value)
                 {
-                    WordsearchInstance.Title = value;
-                    this.RaisePropertyChanged();
+                    _wordsearchInstance.Title = value;
+                    RaisePropertyChanged();
                     UpdatePreview();
                 }
             }
         }
 
-        public string _words;
         public string Words
         {
             get => _words;
-            set => this.RaiseAndSetIfChanged(ref _words, value);
+            set => RaiseAndSetIfChanged(ref _words, value);
         }
 
-        private BitmapImage _previewSource;
         public BitmapImage PreviewSource
         {
             get => _previewSource;
-            set => this.RaiseAndSetIfChanged(ref _previewSource, value);
+            set => RaiseAndSetIfChanged(ref _previewSource, value);
+        }
+
+        private void ExportImage()
+        {
+            if (_dialog.SaveImageDialog(WordsearchTitle, out string chosenFilePath))
+            {
+                using var bitmap = _wordsearchInstance.ToBitmap(WordsearchRenderOption.FillEmptyCellsWithRandomLetters);
+                bitmap.Save(chosenFilePath);
+            }
+        }
+
+        private void ImportFile()
+        {
+            if (_dialog.OpenFileDialog(out string chosenFilePath))
+            {
+                // deserialize wordsearch from file
+                _wordsearchInstance = Wordsearch.Deserialize(XDocument.Load(chosenFilePath));
+
+                // Update interface
+                Words = string.Join(Environment.NewLine, _wordsearchInstance.Words.Select(i => i.Text));
+                RaisePropertyChanged(nameof(WordsearchTitle));
+                UpdatePreview();
+            }
+        }
+
+        private void ExportFile()
+        {
+            if (_dialog.SaveFileDialog(WordsearchTitle, out string chosenFilePath))
+            {
+                // serialize wordsearch to file
+                _wordsearchInstance.Serialize().Save(chosenFilePath);
+            }
+        }
+
+        private void GenerateRandom()
+        {
+            if (Wordsearch.TryGenerateRandom(Words.Split(Environment.NewLine), out Wordsearch ws))
+            {
+                _wordsearchInstance.Words = ws.Words;
+                UpdatePreview();
+            }
+            else
+            {
+                _dialog.ShowMessageBox
+                (
+                    "We're having trouble fitting all of the words onto the wordsearch. Try reducing the length and number of words.",
+                    "Unable to Generate Wordsearch",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error
+                );
+
+            }
         }
     }
 }
