@@ -1,5 +1,5 @@
 ﻿
-namespace Core
+namespace AutoWordsearch.Core
 {
     public enum OrdinalDirection
     {

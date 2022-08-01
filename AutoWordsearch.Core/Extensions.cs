@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Core
+namespace AutoWordsearch.Core
 {
     public static class Extensitons 
     {

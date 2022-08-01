@@ -1,10 +1,11 @@
-﻿using Core;
+﻿
 using System.Windows.Media.Imaging;
 using System.Linq;
 using System;
 using AutoWordsearch.DialogUtil;
 using System.Windows.Input;
 using System.Xml.Linq;
+using AutoWordsearch.Core;
 
 namespace AutoWordsearch
 {
@@ -26,14 +27,6 @@ namespace AutoWordsearch
             GenerateRandomCommand = new RelayCommand(GenerateRandom);
 
             UpdatePreview();
-        }
-
-        public void UpdatePreview()
-        {
-            using (var bmp = _wordsearchInstance.ToBitmap(WordsearchRenderOption.VisibleGrid))
-            {
-                PreviewSource = Conversions.BitmapToImageSource(bmp);
-            }
         }
 
         public ICommand ExportImageCommand { get; }
@@ -65,6 +58,14 @@ namespace AutoWordsearch
         {
             get => _previewSource;
             set => RaiseAndSetIfChanged(ref _previewSource, value);
+        }
+
+        private void UpdatePreview()
+        {
+            using (var bmp = _wordsearchInstance.ToBitmap(WordsearchRenderOption.VisibleGrid))
+            {
+                PreviewSource = Conversions.BitmapToImageSource(bmp);
+            }
         }
 
         private void ExportImage()

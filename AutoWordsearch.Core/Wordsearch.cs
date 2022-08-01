@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Core
+namespace AutoWordsearch.Core
 {
     public class Wordsearch
     {

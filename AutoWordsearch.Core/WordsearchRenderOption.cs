@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core
+namespace AutoWordsearch.Core
 {
     [Flags]
     public enum WordsearchRenderOption

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoWordsearch", "AutoWordsearch\AutoWordsearch.csproj", "{C3474521-B46B-478A-8AC6-D413E8D5E5EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{F1972110-1F79-43AD-B700-54F6D6512DB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoWordsearch.Core", "AutoWordsearch.Core\AutoWordsearch.Core.csproj", "{F1972110-1F79-43AD-B700-54F6D6512DB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
